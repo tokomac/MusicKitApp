@@ -26,7 +26,7 @@ class MusicType: ObservableObject {
         case is Track.Type:
             musicType = .Track
         default:
-            break
+            musicType = .none
         }
     }
 }
@@ -36,7 +36,6 @@ protocol MusicPlayerProtocol: AnyObject {
     var track: MusicItemType? { get set }
     var trackList: MusicItemCollection<MusicItemType>? { get set }
     var isPlaying: Bool { get set }
-    var musicPlayer: ApplicationMusicPlayer { get }
     var playbackStateObserver: AnyCancellable? { get set }
     var isPlaybackQueueInitialized: Bool { get set }
     var playbackQueueInitializationItemID: MusicItemID? { get set }
@@ -44,7 +43,7 @@ protocol MusicPlayerProtocol: AnyObject {
 }
 
 extension MusicPlayerProtocol {
-    
+
     var musicPlayer: ApplicationMusicPlayer {
         let musicPlayer = ApplicationMusicPlayer.shared
         if playbackStateObserver == nil {
@@ -131,8 +130,10 @@ extension MusicPlayerProtocol {
             let count = trackList.count
             let musicPlayer = self.musicPlayer
             if let index = trackList.firstIndex(where: { $0.id == track.id }) {
-                var ix = index + 1
-                if ix >= count { ix = 0 }
+                var ix: Int {
+                    if (index + 1) >= count { return 0 }
+                    return index + 1
+                }
                 self.track = trackList[ix]
 
                 if isPlaying {
@@ -166,7 +167,6 @@ extension MusicPlayerProtocol {
 }
 
 class SongPlay: ObservableObject, MusicPlayerProtocol {
-
     static let shared = SongPlay()
     typealias MusicItemType = Song
     @Published var track: MusicItemType?
