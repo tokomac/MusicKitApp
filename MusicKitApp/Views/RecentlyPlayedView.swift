@@ -10,7 +10,6 @@ import SwiftUI
 
 struct RecentlyPlayedView: View {
     
-    //    let musicPlayerModel: MusicPlayerModel
     @StateObject private var recentlyPlayedViewModel = RecentlyPlayedViewModel.shared
     
     var body: some View {
