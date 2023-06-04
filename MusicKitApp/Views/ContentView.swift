@@ -17,8 +17,7 @@ struct MusicAppTabView: View {
  
     var body: some View {
         VStack(spacing: 0) {
-//            NowPlayingCell()
-            NowPlayCell()
+            NowPlayingCell()
             Rectangle()
                 .fill(secondaryGray)
                 .frame(height: 1)
