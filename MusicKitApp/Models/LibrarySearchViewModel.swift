@@ -22,7 +22,7 @@ class LibrarySearchViewModel: ObservableObject {
             .sink(receiveValue: librarySearch)
     }
     
-    func librarySearch(for searchTerm: String) {
+    private func librarySearch(for searchTerm: String) {
         if searchTerm.isEmpty {
             isDisplayingSuggestedPlaylists = true
             searchResponse = nil
@@ -40,7 +40,7 @@ class LibrarySearchViewModel: ObservableObject {
                     let librarySearchResponse = try await librarySearchRequest.response()
                     await self.update(with: librarySearchResponse, for: searchTerm)
                 } catch {
-                    print("Failed to load library search results due to error: \(error).")
+                    fatalError("Failed to load library search results due to error: \(error).")
                 }
             }
         }
