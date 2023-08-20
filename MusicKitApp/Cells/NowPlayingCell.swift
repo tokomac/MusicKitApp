@@ -5,32 +5,17 @@
 //  Created by tokomac
 //
 
-import Combine
 import MusicKit
 import SwiftUI
 
 struct NowPlayingCell: View {
 
-    @ObservedObject var musicType = MusicType.shared
-
-    var body: some View {
-        switch musicType.musicType {
-        case .Song, .Track:
-            NowPlayingDefaultCell(musicType: musicType)
-        case .none:
-            EmptyView()
-        }
-    }
-}
-
-private struct NowPlayingDefaultCell: View {
-
-    @ObservedObject var musicType: MusicType
+    @StateObject private var nowPlayingMusicItem = NowPlayingMusicItem.shared
     @State private var isExpanded = false
-
+    
     var body: some View {
         HStack {
-            switch musicType.musicType {
+            switch nowPlayingMusicItem.musicItem {
             case .Song:
                 NowPlaySongCell(music: SongPlay.shared)
             case .Track:
@@ -109,8 +94,8 @@ private struct skipButtonImage: View {
 
 private struct NowPlaySongCell: View {
 
-    @ObservedObject var music: SongPlay
-
+    @StateObject var music: SongPlay
+    
     var body: some View {
         if let track = music.track {
             ArtWorkCell(artWork: track.artwork)
@@ -132,8 +117,8 @@ private struct NowPlaySongCell: View {
 }
 
 private struct NowPlayTrackCell: View {
-
-    @ObservedObject var music: TrackPlay
+    
+    @StateObject var music: TrackPlay
     
     var body: some View {
         if let track = music.track {
