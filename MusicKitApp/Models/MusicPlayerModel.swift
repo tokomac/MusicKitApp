@@ -9,24 +9,24 @@ import Combine
 import MusicKit
 import SwiftUI
 
-enum MusicTypeEnum {
+enum NowPlayingMusicItemEnum {
     case Song
     case Track
 }
 
-class MusicType: ObservableObject {
+class NowPlayingMusicItem: ObservableObject {
     
-    static let shared = MusicType()
-    @Published var musicType: MusicTypeEnum?
+    static let shared = NowPlayingMusicItem()
+    @Published var musicItem: NowPlayingMusicItemEnum?
     
-    func musicTypeSet(_ _musictype: PlayableMusicItem) {
-        switch type(of: _musictype) {
+    func musicItemSet(_ musicItem: PlayableMusicItem) {
+        switch type(of: musicItem) {
         case is Song.Type:
-            musicType = .Song
+            self.musicItem = .Song
         case is Track.Type:
-            musicType = .Track
+            self.musicItem = .Track
         default:
-            musicType = .none
+            self.musicItem = .none
         }
     }
 }
@@ -64,14 +64,13 @@ extension MusicPlayerProtocol {
         self.playbackQueueInitializationItemID = track.id
         self.track = track
         
-        MusicType.shared.musicTypeSet(track)
+        NowPlayingMusicItem.shared.musicItemSet(track)
         
         Task {
             do {
                 try await musicPlayer.play()
             } catch {
-                print(error.localizedDescription)
-                print("Failed to prepare music player to play \(track).")
+                fatalError("Failed to prepare music player to play \(track).")
             }
         }
     }
@@ -89,42 +88,17 @@ extension MusicPlayerProtocol {
         self.track = track
         self.trackList = trackList
 
-        MusicType.shared.musicTypeSet(track)
+        NowPlayingMusicItem.shared.musicItemSet(track)
         
         Task {
             do {
                 try await musicPlayer.play()
             } catch {
-                print("Failed to prepare music player to play \(track).")
+                fatalError("Failed to prepare music player to play \(track).")
             }
         }
     }
     
-    func togglePlaybackStatus<MusicItemType: PlayableMusicItem>(for item: MusicItemType) {
-        if !isPlaying {
-            let isPlaybackQueueInitializedForSpecifiedItem = isPlaybackQueueInitialized && (playbackQueueInitializationItemID == item.id)
-            if !isPlaybackQueueInitializedForSpecifiedItem {
-                let musicPlayer = self.musicPlayer
-                setQueue(for: [item])
-                self.isPlaybackQueueInitialized = true
-                self.playbackQueueInitializationItemID = item.id
-                Task {
-                    do {
-                        try await musicPlayer.play()
-                    } catch {
-                        print("Failed to prepare music player to play \(item).")
-                    }
-                }
-            } else {
-                Task {
-                    try? await musicPlayer.play()
-                }
-            }
-        } else {
-            musicPlayer.pause()
-        }
-    }
-
     func skipToNextEntry() {
         if let track = track, let trackList = trackList {
             let count = trackList.count
@@ -179,7 +153,6 @@ class SongPlay: ObservableObject, MusicPlayerProtocol {
 }
 
 class TrackPlay: ObservableObject, MusicPlayerProtocol {
- 
     static let shared = TrackPlay()
     typealias MusicItemType = Track
     @Published var track: MusicItemType?
