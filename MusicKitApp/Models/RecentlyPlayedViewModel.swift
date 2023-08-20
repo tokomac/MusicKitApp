@@ -35,7 +35,7 @@ class RecentlyPlayedViewModel: ObservableObject {
                 let recentlyPlayedResponse = try await recentlyPlayedRequest.response()
                 await self.updateRecentlyPlayedItems(recentlyPlayedResponse.items)
             } catch {
-                print("Failed to load suggested playlists due to error: \(error).")
+                fatalError("Failed to load suggested playlists due to error: \(error).")
             }
         }
     }
